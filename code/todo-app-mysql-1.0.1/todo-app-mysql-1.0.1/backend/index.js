@@ -14,16 +14,15 @@ const connectDB = require('./config/db');
 const { UserModel, TodoModel } = require('./models');
 
 // Connection a la base de données mongodb
-connectDB();
 
 const initApp = async () => {
   try {
-    await db.authenticate();
-    console.log('La connexion a la base de données été établie avec succès.');
+    connectDB();
+    console.log('Connexion à la base de données MongoDB établie avec succès.');
 
-    // Synchronize the DB models
-    UserModel.sync({ alter: true });
-    TodoModel.sync({ alter: true });
+    // Synchronize the DB models (if needed for MongoDB, typically handled differently)
+    await UserModel.init();
+    await TodoModel.init();
 
     // Serve the frontend static files
     app.use(express.static('../dist'));
