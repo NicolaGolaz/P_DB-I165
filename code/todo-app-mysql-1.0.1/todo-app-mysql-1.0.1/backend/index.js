@@ -9,8 +9,12 @@ const env = process.env.NODE_ENV || 'development';
 
 const db = require('./config/database').sequelize;
 const router = require('./routes');
+const connectDB = require('./config/db');
 
 const { UserModel, TodoModel } = require('./models');
+
+// Connection a la base de données mongodb
+connectDB();
 
 const initApp = async () => {
   try {

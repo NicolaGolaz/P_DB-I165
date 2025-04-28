@@ -21,7 +21,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.9.0",
     "mongodb-memory-server": "^10.1.2",
-    "mongoose": "^8.7.2",
+    "mongoose": "^8.14.0",
     "mysql2": "^3.11.5",
     "sequelize": "^6.37.5"
   },
