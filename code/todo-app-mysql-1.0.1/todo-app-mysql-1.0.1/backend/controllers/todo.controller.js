@@ -173,6 +173,7 @@ const TodoController = {
     const todo_id = req.params.id;
     TodoModel.deleteOne({ id: todo_id, user_id: user_id })
       .then(() => {
+        console.log('TODO DELETED', todo_id);
         return res.status(200).json({ id: todo_id });
       })
       .catch((error) => {
