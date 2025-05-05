@@ -127,11 +127,7 @@ const TodoController = {
   },
   getAllTodo: async (req, res) => {
     const user_id = req.sub;
-    await TodoModel.findAll({
-      where: { user_id: user_id },
-      order: [['date', 'ASC']],
-      attributes: { exclude: ['user_id'] }
-    })
+    await TodoModel.find({ user_id: user_id }, [['date', 'ASC']], { user_id: 0 })
       .then((result) => {
         if (result) {
           return res.status(200).json(result);

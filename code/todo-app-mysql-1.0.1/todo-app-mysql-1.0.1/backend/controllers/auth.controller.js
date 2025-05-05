@@ -7,16 +7,15 @@ const JWT_SECRET = require('../config/keys').JWT_SECRET;
 // remove password from user object
 const cleanUser = (user) => {
   // eslint-disable-next-line no-unused-vars
-  const { password, ...cleanedUser } = user.get({ plain: true });
+  const { password, ...cleanedUser } = user.toObject();
   return cleanedUser;
 };
 
 const AuthController = {
   loginUser: async (req, res) => {
-    await UserModel.findOne({
-      where: { email: req.body.email.toLowerCase() }
-    })
+    await UserModel.findOne({ email: req.body.email.toLowerCase() })
       .then((result) => {
+        console.log('RESULT: ', result);
         if (result) {
           if (bcrypt.compareSync(req.body.password, result.password)) {
             const user = cleanUser(result);
@@ -25,6 +24,7 @@ const AuthController = {
               expiresIn: 60 * 60 * 24 * 30 * 6,
               algorithm: 'RS256'
             });
+            console.log('user connected');
             return res.status(200).json({ user: user, token: token });
           } else {
             return res.status(400).json({
