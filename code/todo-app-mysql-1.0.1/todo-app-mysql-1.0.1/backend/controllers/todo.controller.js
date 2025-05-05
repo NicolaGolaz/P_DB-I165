@@ -126,8 +126,9 @@ const TodoController = {
       });
   },
   getAllTodo: async (req, res) => {
+    console.log('GETTING ALL TODO');
     const user_id = req.sub;
-    await TodoModel.find({ user_id: user_id }, [['date', 'ASC']], { user_id: 0 })
+    await TodoModel.find({ user_id: user_id }, ['date', 'ASC'], { user_id: 0 })
       .then((result) => {
         if (result) {
           return res.status(200).json(result);
