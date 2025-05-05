@@ -5,7 +5,7 @@ import type { ResponseData } from '../helpers';
 
 interface ResponseTodoData {
   id: number;
-  date: string;
+  date: Date;
   text: string;
   completed: boolean;
   message?: string;

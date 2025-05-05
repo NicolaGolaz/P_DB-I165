@@ -105,6 +105,8 @@ const TodoController = {
 
 module.exports = TodoController; */
 
+const { text } = require('express');
+
 const TodoModel = require('../models').TodoModel;
 
 const TodoController = {
@@ -118,6 +120,7 @@ const TodoController = {
       user_id: user_id
     })
       .then((result) => {
+        console.log('todo created : ', result);
         return res.status(201).json(result);
       })
       .catch((error) => {
@@ -128,9 +131,11 @@ const TodoController = {
   getAllTodo: async (req, res) => {
     console.log('GETTING ALL TODO');
     const user_id = req.sub;
-    await TodoModel.find({ user_id: user_id }, ['date', 'ASC'], { user_id: 0 })
+    await TodoModel.find({ user_id: user_id }, ['date', 'ASC'])
+      .select({ user_id: 0, text: 1, date: 1, completed: 1 })
       .then((result) => {
         if (result) {
+          console.log('RESULT: ', result);
           return res.status(200).json(result);
         } else {
           return res.status(404);
@@ -166,10 +171,7 @@ const TodoController = {
   deleteTodo: (req, res) => {
     const user_id = req.sub;
     const todo_id = req.params.id;
-    const query = { id: todo_id, user_id: user_id };
-    TodoModel.destroy({
-      where: query
-    })
+    TodoModel.deleteOne({ id: todo_id, user_id: user_id })
       .then(() => {
         return res.status(200).json({ id: todo_id });
       })
