@@ -4,7 +4,7 @@ import { createTodo, deleteTodo, fetchAllTodo, fetchSearchTodo, updateTodo } fro
 import type { ResponseData } from '../helpers';
 
 interface ResponseTodoData {
-  id: number;
+  _id: number;
   date: Date;
   text: string;
   completed: boolean;
@@ -34,23 +34,23 @@ export const useTodo = defineStore('todo', {
         }
       });
     },
-    async updateTodo(id: string, todoForm: TodoUpdateForm) {
-      await updateTodo(id, todoForm).then((response: ResponseData) => {
+    async updateTodo(_id: string, todoForm: TodoUpdateForm) {
+      await updateTodo(_id, todoForm).then((response: ResponseData) => {
         const todoResponse = response as unknown as ResponseTodoData;
         if (this.allTodo) {
           // mets à jour le todo dans le tableau
           this.allTodo = this.allTodo.map((todo) =>
-            todo.id === todoResponse.id ? { ...todo, ...todoResponse } : todo
+            todo._id === todoResponse._id ? { ...todo, ...todoResponse } : todo
           );
         }
       });
     },
-    async deleteTodo(id: string) {
-      await deleteTodo(id).then((response: ResponseData) => {
+    async deleteTodo(_id: string) {
+      await deleteTodo(_id).then((response: ResponseData) => {
         const todoResponse = response as unknown as ResponseTodoData;
         if (this.allTodo) {
           // supprime le todo du tableau
-          this.allTodo = this.allTodo.filter((todo) => todo.id !== Number(todoResponse.id));
+          this.allTodo = this.allTodo.filter((todo) => todo._id !== Number(todoResponse._id));
         }
       });
     },

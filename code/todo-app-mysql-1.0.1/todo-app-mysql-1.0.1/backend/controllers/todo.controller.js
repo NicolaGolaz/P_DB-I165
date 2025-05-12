@@ -152,6 +152,7 @@ const TodoController = {
     const query = { _id: req.params.id, user_id: user_id };
     const data = req.body;
     const result = await TodoModel.findOne(query);
+    console.log('RESULT: ', result);
     if (result) {
       result.completed = data.completed ? data.completed : false;
       result.text = data.text ? data.text : result.text;
@@ -175,7 +176,7 @@ const TodoController = {
     TodoModel.deleteOne({ _id: todo_id, user_id: user_id })
       .then(() => {
         console.log('TODO DELETED', todo_id);
-        return res.status(200).json({ id: todo_id });
+        return res.status(200).json({ _id: todo_id });
       })
       .catch((error) => {
         console.error('DELETE TODO: ', error);
