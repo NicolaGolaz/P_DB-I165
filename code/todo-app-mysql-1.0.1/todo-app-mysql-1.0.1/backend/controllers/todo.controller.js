@@ -147,10 +147,11 @@ const TodoController = {
       });
   },
   editTodo: async (req, res) => {
+    console.log('EDITING TODO');
     const user_id = req.sub;
-    const query = { id: req.params.id, user_id: user_id };
+    const query = { _id: req.params.id, user_id: user_id };
     const data = req.body;
-    const result = await TodoModel.findOne({ where: query });
+    const result = await TodoModel.findOne(query);
     if (result) {
       result.completed = data.completed ? data.completed : false;
       result.text = data.text ? data.text : result.text;
@@ -171,7 +172,7 @@ const TodoController = {
   deleteTodo: (req, res) => {
     const user_id = req.sub;
     const todo_id = req.params.id;
-    TodoModel.deleteOne({ id: todo_id, user_id: user_id })
+    TodoModel.deleteOne({ _id: todo_id, user_id: user_id })
       .then(() => {
         console.log('TODO DELETED', todo_id);
         return res.status(200).json({ id: todo_id });
@@ -184,15 +185,9 @@ const TodoController = {
   getSearchTodo: async (req, res) => {
     const user_id = req.sub;
     const query = req.query.q;
-    await TodoModel.findAll({
-      where: [
-        {
-          user_id: user_id
-        },
-        Sequelize.literal(`MATCH (text) AGAINST ('*${query}*' IN BOOLEAN MODE)`)
-      ],
-      order: [['date', 'ASC']],
-      attributes: { exclude: ['user_id'] }
+    await TodoModel.find({
+      user_id: user_id,
+      text: { $regex: query, $options: 'i' }
     })
       .then((result) => {
         if (result) {
