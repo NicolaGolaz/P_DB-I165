@@ -108,6 +108,9 @@ module.exports = TodoController; */
 const { text } = require('express');
 
 const TodoModel = require('../models').TodoModel;
+const redisClient = require('../config/redis');
+
+const TODO_CACHE_KEY = 'todo:all';
 
 const TodoController = {
   createTodo: async (req, res) => {
@@ -129,22 +132,28 @@ const TodoController = {
       });
   },
   getAllTodo: async (req, res) => {
-    console.log('GETTING ALL TODO');
     const user_id = req.sub;
-    await TodoModel.find({ user_id: user_id }, ['date', 'ASC'])
-      .select({ user_id: 0, text: 1, date: 1, completed: 1 })
-      .then((result) => {
-        if (result) {
-          console.log('RESULT: ', result);
-          return res.status(200).json(result);
-        } else {
-          return res.status(404);
-        }
-      })
-      .catch((error) => {
-        console.error('GET ALL TODO: ', error);
-        return res.status(500);
+    try {
+      const cachedTodos = await redisClient.get(TODO_CACHE_KEY);
+      if (cachedTodos) {
+        console.log('CACHE HIT');
+        return res.status(200).json(JSON.parse(cachedTodos));
+      }
+
+      const result = await TodoModel.find({ user_id: user_id }, ['date', 'ASC']).select({
+        user_id: 0,
+        text: 1,
+        date: 1,
+        completed: 1
       });
+
+      await redisClient.setEx(TODO_CACHE_KEY, 60, JSON.stringify(result));
+      console.log('RESULT: ', result);
+      return res.status(200).json(result);
+    } catch (error) {
+      console.error('GET ALL TODO: ', error);
+      return res.status(500).json({ message: 'Server error' });
+    }
   },
   editTodo: async (req, res) => {
     console.log('EDITING TODO');
