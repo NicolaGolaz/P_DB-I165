@@ -4,7 +4,7 @@ import { createTodo, deleteTodo, fetchAllTodo, fetchSearchTodo, updateTodo } fro
 import type { ResponseData } from '../helpers';
 
 interface ResponseTodoData {
-  _id: number;
+  _id: string;
   date: Date;
   text: string;
   completed: boolean;
@@ -50,7 +50,7 @@ export const useTodo = defineStore('todo', {
         const todoResponse = response as unknown as ResponseTodoData;
         if (this.allTodo) {
           // supprime le todo du tableau
-          this.allTodo = this.allTodo.filter((todo) => todo._id !== Number(todoResponse._id));
+          this.allTodo = this.allTodo.filter((todo) => todo._id !== todoResponse._id);
         }
       });
     },
