@@ -7,7 +7,6 @@ const app = express();
 const port = process.env.PORT || '3000';
 const env = process.env.NODE_ENV || 'development';
 
-const db = require('./config/database').sequelize;
 const router = require('./routes');
 const connectDB = require('./config/db');
 
