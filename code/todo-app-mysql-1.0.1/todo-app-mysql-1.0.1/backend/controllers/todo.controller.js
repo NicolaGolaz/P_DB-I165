@@ -3,11 +3,12 @@ const { text } = require('express');
 const TodoModel = require('../models').TodoModel;
 const redisClient = require('../config/redis');
 
-const TODO_CACHE_KEY = 'todo:all';
+const getTodoCacheKey = (user_id) => `todo:all:${user_id}`;
 
 const TodoController = {
   createTodo: async (req, res) => {
     const user_id = req.sub;
+    const TODO_CACHE_KEY = getTodoCacheKey(user_id);
     const { text, date } = req.body;
     await TodoModel.create({
       text: text,
@@ -27,6 +28,7 @@ const TodoController = {
   },
   getAllTodo: async (req, res) => {
     const user_id = req.sub;
+    const TODO_CACHE_KEY = getTodoCacheKey(user_id);
     try {
       const cachedTodos = await redisClient.get(TODO_CACHE_KEY);
       if (cachedTodos) {
@@ -52,6 +54,7 @@ const TodoController = {
   editTodo: async (req, res) => {
     console.log('EDITING TODO');
     const user_id = req.sub;
+    const TODO_CACHE_KEY = getTodoCacheKey(user_id);
     const query = { _id: req.params.id, user_id: user_id };
     const data = req.body;
     const result = await TodoModel.findOne(query);
@@ -76,6 +79,7 @@ const TodoController = {
   },
   deleteTodo: (req, res) => {
     const user_id = req.sub;
+    const TODO_CACHE_KEY = getTodoCacheKey(user_id);
     const todo_id = req.params.id;
     TodoModel.deleteOne({ _id: todo_id, user_id: user_id })
       .then(() => {
