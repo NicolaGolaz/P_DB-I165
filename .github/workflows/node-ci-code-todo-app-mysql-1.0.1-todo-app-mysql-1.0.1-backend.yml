@@ -1,0 +1,41 @@
+name: Node.js CI
+on:
+  push:
+    branches:
+      - main 
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: code/todo-app-mysql-1.0.1/todo-app-mysql-1.0.1/backend
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: code/todo-app-mysql-1.0.1/todo-app-mysql-1.0.1/backend/package-lock.json
+      - name: Install dependencies
+        run: npm install
+      - name: NPM lint
+        run: npm run lint -- --fix
+      # No tests detected
+      - name: Prepare artifact
+        run: |
+          DEST="$GITHUB_WORKSPACE/artifact_staging"
+          mkdir -p "$DEST"
+
+          cp -rp . "$DEST/"
+          
+          cd "$DEST"
+          rm -rf .git .github node_modules .cache .npm .eslintcache .prettiercache coverage logs *.log
+        shell: bash
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.workflow }} 
+          path: artifact_staging/
+          retention-days: 7
