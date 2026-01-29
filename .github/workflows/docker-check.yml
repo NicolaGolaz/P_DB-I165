@@ -1,0 +1,16 @@
+name: Docker CI
+
+on:
+  push:
+    branches:
+      - main 
+
+jobs:
+  docker-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Docker Compose Config Check
+        run: docker compose -f code/todo-app-mysql-1.0.1/todo-app-mysql-1.0.1/docker-compose.yaml config
